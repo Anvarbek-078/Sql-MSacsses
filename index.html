@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Informatika testi: SQL/Access va Tarmoq texnologiyalari</title>
+<style>
+:root{
+  --bg:#f4f6fb;--card:#ffffff;--ink:#1c2333;--sub:#5b6478;--accent:#3454d1;--accent2:#7c8cf8;
+  --ok:#1f9d55;--okbg:#e7f8ee;--bad:#d64545;--badbg:#fdecec;--line:#e4e8f3;--code:#0f1524;--codetx:#c9d6ff;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#12151f;--card:#1a1f2e;--ink:#eaeefb;--sub:#9aa3bd;--line:#2a3145;--okbg:#123322;--badbg:#3a1a1a;}
+}
+:root[data-theme="dark"]{--bg:#12151f;--card:#1a1f2e;--ink:#eaeefb;--sub:#9aa3bd;--line:#2a3145;--okbg:#123322;--badbg:#3a1a1a;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;min-height:100%;}
+header{position:sticky;top:0;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px;z-index:5;}
+header h1{margin:0 0 4px;font-size:16px;font-weight:700}
+header p{margin:0;font-size:12px;opacity:.9}
+.wrap{max-width:760px;margin:0 auto;padding:16px;}
+.bar{height:8px;background:rgba(255,255,255,.35);border-radius:6px;margin-top:10px;overflow:hidden}
+.bar>div{height:100%;background:#fff;border-radius:6px;transition:width .25s}
+.section-tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--accent);background:#eef1ff;padding:3px 9px;border-radius:20px;margin-bottom:8px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .section-tag{background:#232a44}}
+:root[data-theme="dark"] .section-tag{background:#232a44}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 1px 3px rgba(20,30,60,.06)}
+.qnum{color:var(--sub);font-size:12px;margin-bottom:2px}
+.qtext{font-size:16px;line-height:1.5;margin:0 0 10px;font-weight:600}
+.ctx{font-size:13px;color:var(--sub);margin-bottom:10px;line-height:1.5}
+table{border-collapse:collapse;width:100%;font-size:12px;margin:8px 0 12px;overflow-x:auto;display:block;white-space:nowrap}
+th,td{border:1px solid var(--line);padding:5px 8px;text-align:left}
+th{background:var(--bg);font-weight:700}
+pre{background:var(--code);color:var(--codetx);padding:10px 12px;border-radius:10px;font-size:12.5px;overflow-x:auto;margin:8px 0 12px;white-space:pre-wrap}
+.opt{display:block;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin:7px 0;font-size:14px;color:var(--ink);cursor:pointer;transition:.15s}
+.opt:hover{border-color:var(--accent)}
+.opt.correct{border-color:var(--ok);background:var(--okbg);font-weight:700}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.ans-box{margin-top:12px;padding:12px 14px;background:var(--okbg);border:1px solid var(--ok);border-radius:11px;font-size:14px;display:none}
+.ans-box.show{display:block}
+.ans-box b{color:var(--ok)}
+.navrow{display:flex;gap:10px;margin-top:16px}
+.nbtn{flex:1;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:14px;font-weight:600;cursor:pointer}
+.nbtn.primary{background:var(--accent);color:#fff;border:none}
+.nbtn:disabled{opacity:.4;cursor:default}
+.jump{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.jbtn{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--sub);font-size:11px;cursor:pointer}
+.jbtn.done{background:var(--accent);color:#fff;border-color:var(--accent)}
+.jbtn.active{outline:2px solid var(--accent2)}
+.jbtn.right{background:var(--ok);border-color:var(--ok)}
+.jbtn.wrongj{background:var(--bad);border-color:var(--bad)}
+.score{font-size:15px;font-weight:700;text-align:center;margin-top:14px}
+footer{text-align:center;color:var(--sub);font-size:11px;padding:20px 10px 30px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap" style="padding:0">
+    <h1>Informatika testi</h1>
+    <p id="hp">SQL / MS Access va Tarmoq texnologiyalari — 37 savol</p>
+    <div class="bar"><div id="pbar" style="width:0%"></div></div>
+  </div>
+</header>
+<div class="wrap">
+  <div class="card" id="card"></div>
+  <div class="navrow">
+    <button class="nbtn" id="prevB">&larr; Oldingi</button>
+    <button class="nbtn primary" id="nextB">Keyingi &rarr;</button>
+  </div>
+  <div class="jump" id="jump"></div>
+  <div class="score" id="scoreBox"></div>
+</div>
+<footer>Manba: Toshmamatov Anvarbek — SQL/Access va Tarmoq texnologiyalari savollari. Har bir variant va javob mos hisob-kitoblar bilan tekshirilgan.</footer>
+<script>
+function T(h,r){return '<table><tr>'+h.map(x=>'<th>'+x+'</th>').join('')+'</tr>'+r.map(row=>'<tr>'+row.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('')+'</table>';}
+function C(s){return '<pre>'+s+'</pre>';}
+
+var teachersV1=T(['tr','full_name','date_of_birth','category','salary'],[
+[1,'Akbarov Botir','1988-06-14','first category',4200000],
+[2,'Ashurov Umid','1974-08-04','professor',4800000],
+[3,'Usmonova Xadicha','1964-01-01','first category',5200000],
+[4,'Rahimov Farhod','1994-09-26','assistant',3200000],
+[5,'Qurbonova Kamola','1976-12-24','second category',4600000],
+[6,'Rasulov Begzod','1980-03-29','professor',5100260],
+[7,'Akramova Malika','1985-06-14','professor',4928300],
+[8,'Jamilov Valijon','1992-04-10','second category',3714238]]);
+
+var teachersV2=T(['id','full_name','date_of_birth','category','experience','salary'],[
+[1,'Akbarov Botir','1988-06-14','first category',12,6200000],
+[2,'Ashurov Umid','1974-08-04','professor',19,6800000],
+[3,'Usmonova Xadicha','1964-01-01','first category',22,7200000],
+[4,'Rahimov Farhod','1994-09-26','assistant',3,5200000],
+[5,'Qurbonova Kamola','1976-12-24','second category',14,6600000],
+[6,'Rasulov Begzod','1980-03-29','professor',12,7100000],
+[7,'Akramova Malika','1985-06-14','professor',13,6900000],
+[8,'Jamilov Valijon','1992-04-10','second category',8,5700000]]);
+
+var market=T(['id','product_name','unit','price','total_cost','region'],[
+[1,'Apple',46,18000,828000,'Uzbekistan'],
+[2,'Orange',23,22000,506000,'China'],
+[3,'Tomato',61,10000,610000,'Uzbekistan'],
+[4,'Strawberry',34,37000,1258000,'China'],
+[5,'Pineapple',54,42000,2268000,'Columbia'],
+[6,'Lemon',49,29000,1421000,'Turkiye'],
+[7,'Carrot',37,8000,296000,'Russia']]);
+
+var marketTaj=T(['id','product_name','unit','price','total_cost','region'],[
+[1,'Apple',46,18000,828000,'Uzbekistan'],
+[2,'Orange',23,22000,506000,'China'],
+[3,'Tomato',61,10000,610000,'Uzbekistan'],
+[4,'Strawberry',34,37000,1258000,'Tajikistan'],
+[5,'Pineapple',54,42000,2268000,'Columbia'],
+[6,'Lemon',49,29000,1421000,'Turkiye'],
+[7,'Carrot',37,8000,296000,'Russia']]);
+
+var olympA1=T(['Maktab raqami','Familiya va ism'],[
+[8,'Tojiyev D.'],[8,'Yusupova Z.'],[8,'Hoshimov M.'],
+[23,'Abdiyev B.'],[23,'Asqarova K.'],[23,'Ibragimov A.'],[23,'Kamolov F.'],
+[48,'Rustamov S.'],[48,'Qodirova M.'],
+[91,'Botirova G.'],[91,'Axmedov X.'],[91,'Mirzayev A.']]);
+var olympA2=T(['Familiya va ism','Fan','Medal'],[
+['Axmedov X.','Matematika','Kumush'],['Botirova G.','Fizika','Oltin'],['Qodirova M.','Informatika','Bronza'],
+['Ibragimov A.','Kimyo','Bronza'],['Asqarova K.','Matematika','Oltin'],['Hoshimov M.','Biologiya','Bronza'],
+['Abdiyev B.','Informatika','Oltin'],['Mirzayev A.','Fizika','Kumush'],['Rustamov S.','Kimyo','Oltin'],
+['Kamolov F.','Biologiya','Bronza'],['Yusupova Z.','Kimyo','Kumush'],['Tojiyev D.','Biologiya','Bronza']]);
+
+var olympB1=T(['Maktab','Familiya'],[[10,'Alijonov'],[10,'Hasanov'],[10,'Tojiyev'],[34,'Abdiyev'],[34,'Nishonov'],
+[73,'Hakimova'],[73,'Hoshimov'],[73,'Mahmudov'],[119,'Raximova'],[119,'Kamolov']]);
+var olympB2=T(['Familiya','Predmet','Medal'],[
+['Raximova','Informatika','Oltin'],['Nishonov','Biologiya','Bronza'],['Hakimova','Matematika','Kumush'],
+['Kamolov','Fizika','Oltin'],['Hasanov','Informatika','Kumush'],['Tojiyev','Biologiya','Oltin'],
+['Mahmudov','Fizika','Bronza'],['Alijonov','Fizika','Bronza'],['Abdiyev','Informatika','Oltin'],['Hoshimov','Matematika','Bronza']]);
+
+var bus=T(["Jo'nash joyi","Kelish joyi","Jo'nash vaqti","Kelish vaqti"],[
+['Chimboy','Bektemir','9:50','11:10'],['Bektemir','Durmon','10:00','11:50'],['Gulshan','Chimboy','10:15','12:20'],
+['Gulshan','Durmon','10:50','12:05'],['Durmon','Chimboy','11:45','12:50'],['Bektemir','Gulshan','11:50','12:40'],
+['Gulshan','Bektemir','12:50','13:40'],['Bektemir','Chimboy','13:00','14:20'],['Chimboy','Gulshan','13:05','14:40'],
+['Durmon','Gulshan','13:15','14:30'],['Chimboy','Durmon','13:45','14:50'],['Durmon','Bektemir','15:10','17:00']]);
+
+var books=T(['book_id','book_name','author','pages','price','language'],[
+[1,'Xamsa','A.Navoiy',512,125000,'uz'],[2,'Urush va tinchlik','L.Tolstoy',480,95000,'ru'],
+[3,'Abulfayzxon','A.Fitrat',165,38000,'uz'],[4,'Mehrobdan chayon','A.Qodiriy',246,49000,'uz'],
+[5,'Nur va soyalar','R.Thakur',345,78000,'en'],[6,'Hamlet','U.Sheksper',278,84000,'en'],
+[7,'Ufq','S.Ahmad',322,81000,'uz'],[8,'Onegin','A.Pushkin',270,71000,'ru']]);
+
+var foods=T(['food_id','food_name','price_per_kg','full_weight','region','type'],[
+[1,'Apple',18000,72,'Uzbekistan','Golden'],[2,'Strawberry',54000,36,'China','Allstar'],
+[3,'Grape',34000,51,'Argentina','Concord'],[4,'Banana',29000,54,'Brasil','Lady finger'],
+[5,'Lemon',35000,37,'Spain','Lisbon']]);
+var foodsRes=T(['food_id','food_name','full_weight'],[[5,'Lemon',37],[1,'Apple',72],[3,'Grape',51],[2,'Strawberry',36]]);
+
+var Q=[
+{s:1,q:"\u201Cteachers\u201D jadvali berilgan. Ushbu SQL so'rovi bajarilgach nechta natija chiqadi?",
+ctx:teachersV1+C("SELECT * FROM teachers WHERE category='first category' AND salary > 4300000;"),
+opts:["A) 0","B) 1","C) 2","D) 3"],correct:1,
+expl:"first category'dan faqat Usmonova Xadicha (5200000) shartga mos keladi; Akbarov Botir (4200000) 4300000 dan katta emas — jami 1 ta natija."},
+
+{s:1,q:"Olimpiada jadvallariga ko'ra: matematika va kimyo fanlaridan oltin medal olgan o'quvchilar o'qiydigan maktablarning reyting ballari yig'indisini toping (oltin=15, kumush=9, bronza=4).",
+ctx:olympA1+olympA2,opts:["A) 38 ball","B) 19 ball","C) 57 ball","D) 33 ball"],correct:2,
+expl:"Matematikadan oltin — Asqarova K. (23-maktab, jami 38 ball), kimyodan oltin — Rustamov S. (48-maktab, jami 19 ball). 38+19=57."},
+
+{s:1,q:"Avtobus jadvaliga ko'ra, soat 9:00 da Bektemirda bo'lgan sayohatchi Chimboyga eng tez qachon yetib boradi?",
+ctx:bus,opts:["A) 11:10","B) 12:50","C) 14:20","D) 13:40"],correct:2,
+expl:"To'g'ridan-to'g'ri Bektemir\u2192Chimboy reysi 13:00 da jo'nab, 14:20 da yetib keladi — bu eng tez variant."},
+
+{s:1,q:"\u201Cteachers\u201D jadvali (id versiyasi). SELECT * FROM teachers WHERE NOT category=\"assistant\" LIMIT 5; natijasidagi \u201Cexperience\u201D ustunining eng kichik va eng katta qiymatlari o'rta arifmetigini toping.",
+ctx:teachersV2,opts:["A) 15","B) 17","C) 19","D) 21"],correct:1,
+expl:"Assistant chiqarib tashlansa, birinchi 5 mos qator: 12,19,22,14,12. min=12,max=22, o'rtachasi=(12+22)/2=17."},
+
+{s:1,q:"Xuddi shu olimpiada jadvallariga ko'ra: reyting ballari farqi eng kichik bo'lgan ikkita maktab o'quvchilarining jami oltin va bronza medallari sonini toping.",
+ctx:olympA1+olympA2,opts:["A) 1 ta oltin, 3 ta bronza","B) 2 ta oltin, 2 ta bronza","C) 0 ta oltin, 4 ta bronza","D) 1 ta oltin, 2 ta bronza"],correct:0,
+expl:"Maktablar balli: 8=17, 23=38, 48=19, 91=33. Eng kichik juft farq — 8 va 48 (|17-19|=2). Ular birgalikda: 1 oltin, 1 kumush, 3 bronza."},
+
+{s:1,q:"\u201Cmarket\u201D jadvali. SELECT product_name, price, region FROM market WHERE region LIKE %u% AND total_cost < 1000000 ORDER BY unit; natijasini toping.",
+ctx:market+C("SELECT product_name, price, region FROM market WHERE region LIKE %u% AND total_cost < 1000000 ORDER BY unit;"),
+opts:["A) Carrot/8000/Russia; Apple/18000/Uzbekistan; Tomato/10000/Uzbekistan","B) Apple/18000/Uzbekistan; Carrot/8000/Russia; Tomato/10000/Uzbekistan","C) Tomato/10000/Uzbekistan; Apple/18000/Uzbekistan; Carrot/8000/Russia","D) Carrot/8000/Russia; Tomato/10000/Uzbekistan; Apple/18000/Uzbekistan"],correct:0,
+expl:"'u' harfli regionlar va total_cost<1000000: Apple,Tomato,Carrot qoladi. unit bo'yicha o'sish tartibida: Carrot(37),Apple(46),Tomato(61)."},
+
+{s:1,q:"Qidiruv jadvali: Computer&Printer=360000, Computer&Scaner=410000, (Computer|Scaner)&Printer=550000. Scaner&(Computer|Printer)=x ni toping.",
+ctx:"",opts:["A) 550 000","B) 600 000","C) 650 000","D) 500 000"],correct:1,
+expl:"(C|S)&P=C&P+S&P-C&S&P \u2192 S&P-C&S&P=550000-360000=190000. S&(C|P)=C&S+(S&P-C&S&P)=410000+190000=600000."},
+
+{s:1,q:"\u201Cteachers\u201D (id versiyasi). SELECT * FROM teachers WHERE full_name LIKE '%a%a%' AND NOT category='assistant' LIMIT 3; natijasidagi experience yig'indisini toping.",
+ctx:teachersV2,opts:["A) 34","B) 48","C) 53","D) 41"],correct:1,
+expl:"Kamida 2 ta 'a' harfli va assistant bo'lmagan birinchi 3 qator: Akbarov(12), Usmonova(22), Qurbonova(14). 12+22+14=48."},
+
+{s:1,q:"MS Access \u201Cbooks\u201D jadvali. So'rov: price<=84000 va language Not In('ru','en'). Natijaning price ustuni o'rta arifmetigini toping.",
+ctx:books,opts:["A) 49 000","B) 56 000","C) 63 000","D) 71 000"],correct:1,
+expl:"Faqat 'uz' tilidagi va price<=84000: Abulfayzxon(38000), Mehrobdan chayon(49000), Ufq(81000). (38000+49000+81000)/3=56000."},
+
+{s:1,q:"\u201Cfoods\u201D jadvali. Natija quyidagi ko'rinishga chiqqan bo'lsa, qaysi SQL so'rov ishlatilgan?",
+ctx:foods+"<div style='margin:8px 0;font-size:12px;color:var(--sub)'>Natija:</div>"+foodsRes,
+opts:[
+"A) SELECT * FROM foods WHERE full_weight IN(36,37,54) OR NOT price_per_kg=29000 ORDER BY type DESC;",
+'B) SELECT food_id, food_name, full_weight FROM foods WHERE NOT price_per_kg=29000 AND region LIKE "*i*" ORDER BY food_name ASC;',
+'C) SELECT food_id, food_name, full_weight FROM foods WHERE NOT full_weight IN(36,37,54) OR region LIKE "*in*" ORDER BY type DESC;',
+'D) SELECT food_id, food_name, full_weight FROM foods WHERE type="Lady finger" AND NOT price_per_kg IN (35000,54000,34000) ORDER BY type DESC;'],
+correct:2,expl:"NOT full_weight IN(36,37,54) \u2192 Apple,Grape; region LIKE *in* \u2192 Grape,Strawberry,Lemon. OR birlashtirilsa: Apple,Grape,Strawberry,Lemon — aynan natijadagi 4 qator, type DESC tartibi ham mos."},
+
+{s:1,q:"\u201Cteachers\u201D (id). SELECT full_name, category, salary FROM teachers WHERE NOT category='second category' AND experience>=13 ORDER BY salary DESC; natijasini toping.",
+ctx:teachersV2,
+opts:["A) Ashurov(6800000),Akramova(6900000),Usmonova(7200000)","B) Usmonova(7200000),Akramova(6900000),Rahimov Farhod(5200000)","C) Usmonova(7200000),Akramova(6900000),Ashurov(6800000)","D) Ashurov(6800000),Usmonova(7200000),Akramova(6900000)"],
+correct:2,expl:"Mos qatorlar: Ashurov(6800000),Usmonova(7200000),Akramova(6900000). salary DESC: Usmonova,Akramova,Ashurov."},
+
+{s:1,q:"Qidiruv jadvali: Computer&Printer=360000, Computer&Scaner=410000, Scaner&(Computer|Printer)=600000. (Computer|Scaner)&Printer=x?",
+ctx:"",opts:["A) 570 000","B) 550 000","C) 610 000","D) 540 000"],correct:1,
+expl:"(C|S)&P=C&P+(S&(C|P)-C&S)=360000+(600000-410000)=550000."},
+
+{s:1,q:"Olimpiada (2-jadval, boshqa ma'lumotlar, oltin=13,kumush=7,bronza=3). Reyting ballari farqi eng katta bo'lgan maktablar o'quvchilarining jami oltin va kumush medallari sonini toping.",
+ctx:olympB1+olympB2,opts:["A) 2 ta oltin, 0 ta kumush","B) 1 ta oltin, 1 ta kumush","C) 2 ta oltin, 1 ta kumush","D) 1 ta oltin, 2 ta kumush"],
+correct:2,expl:"Maktablar balli: 10=23,34=16,73=13,119=26. Eng katta juft farq — 73 va 119 (26-13=13). Birgalikda: 2 oltin,1 kumush."},
+
+{s:1,q:"\u201Cmarket\u201D jadvali. SELECT * FROM market WHERE product_name LIKE %p% OR price<=15000 LIMIT 5 ORDER BY id; natijasining unit ustuni yig'indisini toping.",
+ctx:market+C("SELECT * FROM market WHERE product_name LIKE %p% OR price <= 15000 LIMIT 5 ORDER BY id;"),
+opts:["A) 172","B) 185","C) 198","D) 210"],correct:2,
+expl:"'p' harfli: Apple,Pineapple; price<=15000: Tomato,Carrot. id bo'yicha: 46+61+54+37=198."},
+
+{s:1,q:"So'rov: (Computer|Printer)&Scaner=x, Computer|Printer|Scaner=y, Computer|Printer=z, Computer&Printer&Scaner=w. To'g'ri o'sish tartibini toping.",
+ctx:"",opts:["A) w < z < x < y","B) y < x < z < w","C) y < z < x < w","D) w < x < z < y"],correct:3,
+expl:"To'plamlar nazariyasiga ko'ra doim w\u2264x\u2264z\u2264y (w — uchtaning kesishmasi, y — uchtaning birlashmasi)."},
+
+{s:1,q:"\u201Cmarket\u201D (Strawberry=Tajikistan). SELECT * FROM market WHERE NOT unit IN(46,54,61) OR region='Columbia' ORDER BY region DESC; natijasining 1- va oxirgi qatoridagi unit qiymatlarining musbat ayirmasini toping.",
+ctx:marketTaj+C("SELECT * FROM market WHERE NOT unit IN(46,54,61) OR region='Columbia' ORDER BY region DESC;"),
+opts:["A) 15","B) 26","C) 32","D) 11"],correct:1,
+expl:"Mos qatorlar: Orange,Strawberry,Lemon,Carrot,Pineapple. region DESC: Turkiye(49),Tajikistan(34),Russia(37),Columbia(54),China(23). 49-23=26."},
+
+{s:1,q:"\u201Cmarket\u201D. SELECT * FROM market WHERE NOT unit IN(23,34,37) AND NOT region='Russia' ORDER BY product_name; natijasining 1- va oxirgi qatoridagi unit yig'indisini toping.",
+ctx:market+C("SELECT * FROM market WHERE NOT unit IN(23,34,37) AND NOT region='Russia' ORDER BY product_name;"),
+opts:["A) 94","B) 107","C) 115","D) 99"],correct:1,
+expl:"Mos qatorlar: Apple,Tomato,Pineapple,Lemon. Alifbo bo'yicha: Apple(46)...Tomato(61). 46+61=107."},
+
+{s:1,q:"\u201Cmarket\u201D. SELECT product_name, price, region FROM market WHERE NOT region='Uzbekistan' AND unit>35 ORDER BY price DESC; natijasini toping.",
+ctx:market+C("SELECT product_name, price, region FROM market WHERE NOT region='Uzbekistan' AND unit > 35 ORDER BY price DESC;"),
+opts:["A) Pineapple/42000/Columbia; Lemon/29000/Turkiye; Carrot/8000/Russia","B) Lemon/29000/Turkiye; Pineapple/42000/Columbia; Carrot/8000/Russia","C) Carrot/8000/Russia; Lemon/29000/Turkiye; Pineapple/42000/Columbia","D) Pineapple/42000/Columbia; Carrot/8000/Russia; Lemon/29000/Turkiye"],correct:0,
+expl:"Uzbekistan chiqarilib, unit>35: Pineapple(54),Lemon(49),Carrot(37) qoladi. price DESC bo'yicha shu tartib."},
+
+{s:2,q:"Ta'rifga ko'ra qaysi topologiya: \u201Ckompyuterlar bitta kabel(segment) bo'ylab ulangan; barcha tugun ma'lumotni qabul qilishi mumkin; umumiy kabel orqali axborot almashinadi\u201D?",
+ctx:"",opts:["A) halqa(ring)","B) to'rli(mesh)","C) shina(bus)","D) yulduz(star)"],correct:2,
+expl:"Barcha tugunlarning bitta umumiy kabelga ulanishi — shina (bus) topologiyasi."},
+
+{s:2,q:"Ali IP manzilini yozdi, Vali uni 4 bo'lakka bo'ldi: a=\"36.4\", b=\"101.\", c=\"3.2\", d=\"11\". To'g'ri tartibni toping (IP manzil hosil bo'lishi uchun).",
+ctx:"",opts:["A) b, a, c, d","B) a, c, b, d","C) d, b, a, c","D) c, a, d, b"],correct:0,
+expl:"\"101.\"+\"36.4\"+\"3.2\"+\"11\" = 101.36.43.211 — barcha 4 oktet 0-255 oralig'ida, aynan 3 ta nuqta bor. Boshqa tartiblar noto'g'ri oktet beradi."},
+
+{s:2,q:"A) FTP protokoli veb sahifani ko'rish uchun brauzerlar tomonidan serverga so'rov yuborish maqsadida ishlatiladi. B) TCP/IP — internet/LAN/WAN uchun asosiy protokol, 2 pog'onali (paketlash + manzil nazorati). A va B ni baholang.",
+ctx:"",opts:["A) A-rost, B-rost","B) A-rost, B-yolg'on","C) A-yolg'on, B-rost","D) A-yolg'on, B-yolg'on"],correct:2,
+expl:"FTP emas, HTTP shu vazifani bajaradi (A-yolg'on); TCP/IP haqidagi tavsif to'g'ri (B-rost)."},
+
+{s:2,q:"Lokal tarmoqdagi kompyuterning IP manzili 192.168.10.32/27 bo'lsa, tarmoq maskasini toping.",
+ctx:"",opts:["A) 255.255.255.132","B) 255.255.252.0","C) 255.255.255.224","D) 255.255.255.27"],correct:2,
+expl:"/27 = 27 ta \u201C1\u201D bit = 11111111.11111111.11111111.11100000 = 255.255.255.224."},
+
+{s:2,q:"Xakerlar DNS serverni buzib, haqiqiy sayt ko'rinishidagi soxta saytga yo'naltirdi. Bu usul qanday nomlanadi?",
+ctx:"",opts:["A) Vishing","B) Farming (pharming)","C) Smishing","D) Rutkit (rootkit)"],correct:1,
+expl:"DNS orqali soxta saytga yo'naltirish — Pharming hujumining ta'rifi."},
+
+{s:2,q:"A) Router turli tarmoqdagi kompyuterlarni bog'lay olmaydi. B) Optik tolali kabelning tezligi mis kabeldan yuqori. A va B ni baholang.",
+ctx:"",opts:["A) A-rost, B-rost","B) A-rost, B-yolg'on","C) A-yolg'on, B-rost","D) A-yolg'on, B-yolg'on"],correct:2,
+expl:"Router aynan turli tarmoqlarni bog'lash uchun ishlatiladi (A-yolg'on); optik tola haqiqatan tezroq (B-rost)."},
+
+{s:2,q:"Ikkilik ko'rinishdagi manzil: 10101000 01001000 10010101 01110001. O'nlik ko'rinishini toping.",
+ctx:C("10101000 01001000 10010101 01110001"),
+opts:["A) 201.10.216.109","B) 195.168.201.99","C) 196.45.193.105","D) 168.72.149.113"],correct:3,
+expl:"10101000=168; 01001000=72; 10010101=149; 01110001=113 \u2192 168.72.149.113."},
+
+{s:2,q:"To'rt qog'oz bo'lagi: A=\"2.16\", B=\".64\", C=\"8.32\", D=\"16\". Qaysi tartibda to'g'ri IP manzil hosil bo'ladi?",
+ctx:"",opts:["A) BCDA","B) DACB","C) ACBD","D) DABC"],correct:1,
+expl:"D+A+C+B = \"16\"+\"2.16\"+\"8.32\"+\".64\" = 162.168.32.64 — to'g'ri IP (boshqalari noto'g'ri oktet beradi)."},
+
+{s:2,q:"Qaysi ta'rif \u201CXavfsizlik devori\u201D (Firewall/Brandmauer) atamasini to'g'ri ifodalaydi?",
+ctx:"",opts:["A) mavjud xavf natijasida bo'lishi mumkin bo'lgan hujum turi","B) tarmoq trafigini bloklash/filtrlash uchun kirishni boshqaruvchi qurilma yoki dasturiy ta'minot","C) o'z-o'zidan ko'payuvchi, fayllarga zarar yetkazuvchi dastur","D) ma'lumotlarni tasodifiy/qasddan o'chirishdan himoyalash"],
+correct:1,expl:"Firewall — tarmoq trafigini nazorat qilib, kirish-chiqishni boshqaruvchi vosita."},
+
+{s:2,q:"Bank hujumga uchradi, hujum global (\u201Coq\u201D) IP orqali amalga oshirilgan. Qaysi manzil global bo'la oladi?",
+ctx:"",opts:["A) 172.16.31.101","B) 46.8.35.129","C) 10.0.162.204","D) 192.168.1.10"],correct:1,
+expl:"172.16.x, 10.x va 192.168.x — barchasi lokal (xususiy) diapazonlar. Faqat 46.8.35.129 global."},
+
+{s:2,q:"Qaysi biri lokal kompyuterda IP manzil bo'la olmaydi?",
+ctx:"",opts:["A) 192.168.0.255","B) 10.0.0.1","C) 255.255.0.0","D) 192.168.0.1"],correct:2,
+expl:"255.255.0.0 — odatiy host manzili emas (255.x.x.x bloki maxsus/reservlangan)."},
+
+{s:2,q:"A(192.0.2.100/24), B(192.0.2.50/24). 1) bitta tarmoqda; 2) tarmoqda 256 ta IP bor; 3) A bitli ko'rinishi ...00110010; 4) B tarmoq manzili 192.0.2.0; 5) router kerak. Faqat rost mulohazalar qaysi variantda to'g'ri ko'rsatilgan?",
+ctx:"",opts:["A) 1,2,4","B) 1,3,5","C) 2,3,4","D) 1,2,5"],correct:0,
+expl:"1,2,4 — rost (bitta /24 tarmoq, 256 manzil, B tarmoq manzili to'g'ri). 3 — yolg'on (100=01100100, 50 emas). 5 — yolg'on (bir tarmoqda, router shart emas)."},
+
+{s:2,q:"A(192.0.10.32/27), B(192.168.10.95/19). 1) A tarmoqda 32 IP; 2) B bitli ko'rinishi ...01010011; 3) bitta tarmoqda; 4) router kerak; 5) B tarmoq manzili 192.168.10.0. Faqat YOLG'ON mulohazalar qaysi variantda to'g'ri ko'rsatilgan?",
+ctx:"",opts:["A) 1,2,4","B) 2,3,5","C) 1,3,4","D) 2,4,5"],correct:1,
+expl:"2 — yolg'on (95=01011111, 01010011 emas). 3 — yolg'on (turli tarmoq). 5 — yolg'on (haqiqiy tarmoq manzili 192.168.0.0). 1,4 — rost."},
+
+{s:2,q:"A(192.168.1.10/24), B(192.168.2.10/28). 1) A tarmoqda 256 IP; 2) bitta tarmoqda; 3) maskalar bir xil; 4) B tarmoq manzili 192.168.2.0; 5) B bitli ko'rinishi ...00001010. Faqat rost mulohazalar qaysi variantda to'g'ri ko'rsatilgan?",
+ctx:"",opts:["A) 1,2,3","B) 2,4,5","C) 1,4,5","D) 1,3,5"],correct:2,
+expl:"1,4,5 — rost. 2 — yolg'on (turli /24 va /28 tarmoqlar). 3 — yolg'on (maskalar /24 va /28, har xil)."},
+
+{s:2,q:"A(192.0.10.32/27), B(192.168.10.95/19). 1) A tarmoqda 32 IP; 2) B tarmog'ida 1024 IP bor; 3) bitta tarmoqda; 4) router kerak; 5) B tarmoq manzili 192.168.0.0. Faqat rost mulohazalar qaysi variantda to'g'ri ko'rsatilgan?",
+ctx:"",opts:["A) 1,3,5","B) 2,3,4","C) 1,4,5","D) 1,2,4"],correct:2,
+expl:"1 — rost (2^5=32). 2 — yolg'on (/19 \u2192 2^13=8192, 1024 emas). 3 — yolg'on (turli tarmoq). 4 — rost. 5 — rost (/19 bo'yicha to'g'ri tarmoq manzili)."},
+
+{s:2,q:"A) Windows'dagi Wi-Fi belgisi har doim internetga ulanganini bildirmaydi. B) \u201Cxavotir\u201D belgisi har doim internetga ulanmaganini bildiradi. A va B ni baholang.",
+ctx:"",opts:["A) A-rost, B-rost","B) A-rost, B-yolg'on","C) A-yolg'on, B-rost","D) A-yolg'on, B-yolg'on"],correct:0,
+expl:"Ikkala tasdiq ham to'g'ri talqin qilingan."},
+
+{s:2,q:"A) Ethernet kabelini ulash uchun NIC (Network Interface Card) kerak. B) Ma'lumot oqimi tezligi \u201Ctrafik\u201D deb ataladi. A va B ni baholang.",
+ctx:"",opts:["A) A-rost, B-rost","B) A-rost, B-yolg'on","C) A-yolg'on, B-rost","D) A-yolg'on, B-yolg'on"],correct:1,
+expl:"NIC haqidagi tasdiq to'g'ri (A-rost); lekin trafik — oqim TEZLIGI emas, uzatilayotgan ma'lumot oqimining o'zi (B-yolg'on)."},
+
+{s:2,q:"IP 195.227.196.12, tarmoq manzili 195.227.192.0. Maskaning uchinchi baytining eng katta mumkin qiymatini toping.",
+ctx:"",opts:["A) 248","B) 196","C) 192","D) 252"],correct:0,
+expl:"Blok=8 (maska=248) da diapazon [192,199], 196 shu oraliqqa kiradi — bu eng katta mos maska qiymati."},
+
+{s:2,q:"IP 111.81.208.27, tarmoq manzili 111.81.192.0. Maskaning uchinchi baytining eng katta mumkin qiymatini toping.",
+ctx:"",opts:["A) 224","B) 192","C) 228","D) 255"],correct:0,
+expl:"Blok=32 (maska=224) da diapazon [192,223], 208 shu oraliqqa kiradi."}
+];
+
+var cur=0,answered=new Array(Q.length).fill(false),picked=new Array(Q.length).fill(-1),correctCount=0;
+var secName={1:"SQL / MS Access",2:"Tarmoq texnologiyalari"};
+
+function renderJump(){
+  var j=document.getElementById('jump');j.innerHTML='';
+  Q.forEach(function(q,i){
+    var b=document.createElement('button');
+    var cls='jbtn'+(i===cur?' active':'');
+    if(answered[i])cls+=(picked[i]===q.correct?' right':' wrongj');
+    b.className=cls;b.textContent=i+1;b.onclick=function(){cur=i;render();};j.appendChild(b);
+  });
+}
+function setProgress(){
+  var done=answered.filter(Boolean).length;
+  document.getElementById('pbar').style.width=Math.round((cur+1)/Q.length*100)+'%';
+  document.getElementById('hp').textContent=secName[Q[cur].s]+" — savol "+(cur+1)+"/"+Q.length+" (javob berilgan: "+done+")";
+}
+function render(){
+  var q=Q[cur],c=document.getElementById('card'),html='';
+  html+='<div class="section-tag">'+secName[q.s]+'</div>';
+  html+='<div class="qnum">'+(cur+1)+'-savol</div>';
+  html+='<p class="qtext">'+q.q+'</p>';
+  if(q.ctx)html+='<div class="ctx">'+q.ctx+'</div>';
+  html+='<div id="opts">';
+  q.opts.forEach(function(o,i){html+='<button class="opt" data-i="'+i+'" onclick="pick('+i+')">'+o+'</button>';});
+  html+='</div><div class="ans-box" id="ab"><b id="reslabel">Izoh:</b> <span id="exspan"></span></div>';
+  c.innerHTML=html;
+  if(answered[cur])restoreMcq();
+  document.getElementById('prevB').disabled=cur===0;
+  document.getElementById('nextB').textContent=cur===Q.length-1?'Yakunlash':'Keyingi \u2192';
+  setProgress();renderJump();updateScore();
+}
+function pick(i){
+  var q=Q[cur];if(answered[cur])return;
+  var btns=document.querySelectorAll('#opts .opt');
+  btns.forEach(function(b,idx){
+    if(idx===q.correct)b.classList.add('correct');
+    else if(idx===i)b.classList.add('wrong');
+    b.onclick=null;
+  });
+  picked[cur]=i;
+  if(i===q.correct)correctCount++;
+  answered[cur]=true;
+  document.getElementById('reslabel').textContent=(i===q.correct?"To'g'ri! Izoh:":"Noto'g'ri. Izoh:");
+  document.getElementById('exspan').textContent=q.expl;
+  document.getElementById('ab').classList.add('show');
+  renderJump();updateScore();
+}
+function restoreMcq(){
+  var q=Q[cur],btns=document.querySelectorAll('#opts .opt');
+  btns.forEach(function(b,idx){
+    if(idx===q.correct)b.classList.add('correct');
+    else if(idx===picked[cur])b.classList.add('wrong');
+    b.onclick=null;
+  });
+  document.getElementById('reslabel').textContent=(picked[cur]===q.correct?"To'g'ri! Izoh:":"Noto'g'ri. Izoh:");
+  document.getElementById('exspan').textContent=q.expl;
+  document.getElementById('ab').classList.add('show');
+}
+function updateScore(){
+  document.getElementById('scoreBox').textContent="Ball: "+correctCount+" / "+Q.length;
+}
+document.getElementById('prevB').onclick=function(){if(cur>0){cur--;render();}};
+document.getElementById('nextB').onclick=function(){if(cur<Q.length-1){cur++;render();}else{window.scrollTo({top:0,behavior:'smooth'});}};
+render();
+</script>
+</body>
+</html>
